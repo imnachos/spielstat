@@ -28,7 +28,7 @@ class SpielstatSpider(scrapy.Spider):
         item = SpielstatItem()
         stats = []
         outputTable = []
-        labels = ['Possesion','Shots on goal', 'Missed shots', 'Offsides', 'Throw-ins', 'Infractions']
+        labels = ['Possesion','Shots on goal', 'Missed shots', 'Corners', 'Offsides', 'Throw-ins', 'Infractions']
         
         self.logger.info('Parse called on: %s', response.url)
         #self.logger.info('Response body: %s', response.body)
