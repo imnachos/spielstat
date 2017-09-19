@@ -17,7 +17,9 @@ class SpielstatItem(scrapy.Item):
     homeTeam = scrapy.Field()
     awayTeam = scrapy.Field()
     homeGoals = scrapy.Field()
-    awayGoals= scrapy.Field()
+    awayGoals = scrapy.Field()
+    
+    scoreboard = scrapy.Field()
     
     homePossession = scrapy.Field()
     homeShotsOnGoal = scrapy.Field()

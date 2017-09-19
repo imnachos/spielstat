@@ -27,7 +27,8 @@ class SpielstatSpider(scrapy.Spider):
     def parse(self, response):
         item = SpielstatItem()
         stats = []
-        participants = []
+        outputTable = []
+        labels = ['Possesion','Shots on goal', 'Missed shots', 'Offsides', 'Throw-ins', 'Infractions']
         
         self.logger.info('Parse called on: %s', response.url)
         #self.logger.info('Response body: %s', response.body)
@@ -35,26 +36,30 @@ class SpielstatSpider(scrapy.Spider):
         participantsData = response.xpath('//tr[@class="match-summary-teams"]')
          
         for p in participantsData.xpath('.//td[@class="participant-name"]/a/text()'):  
-            participants.append(p.extract())
+            stats.append(p.extract())
         
-        item['homeTeam'] = participants[0]
+        item['homeTeam'] = stats[0]
         self.logger.info('Home team: %s ', item['homeTeam'])
         
-        item['awayTeam'] = participants[1]
+        item['awayTeam'] = stats[1]
         self.logger.info('Away team: %s ', item['awayTeam'])
         
-        item['homeGoals'] = participantsData.xpath('//td[@class="participant-score participant-score-home participant-score-runningscore-home"]/text()').extract()
+        item['homeGoals'] = participantsData.xpath('//td[@class="participant-score participant-score-home participant-score-runningscore-home"]/text()')[0].extract()
         self.logger.info('Home goals: %s ', item['homeGoals'])
         
-        item['awayGoals'] = participantsData.xpath('//td[@class="participant-score participant-score-away participant-score-runningscore-away"]/text()').extract()
+        item['awayGoals'] = participantsData.xpath('//td[@class="participant-score participant-score-away participant-score-runningscore-away"]/text()')[0].extract()
         self.logger.info('Away goals: %s ', item['awayGoals'])
+        
+        item['scoreboard'] = item['homeGoals'] + '-' + item['awayGoals']
         
         main_stats = response.xpath('//div[@class="main-stats"]')
         
-        item['homePossession'] = main_stats.xpath('//div[@class="home"]/span/text()').extract()
+        item['homePossession'] = main_stats.xpath('//div[@class="home"]/span/text()')[0].extract()
+        stats.append(item['homePossession'])
         self.logger.info('Home possession: %s ', item['homePossession'])
-            
-        item['awayPossession'] = main_stats.xpath('//div[@class="away"]/span/text()').extract()
+        
+        item['awayPossession'] = main_stats.xpath('//div[@class="away"]/span/text()')[0].extract()
+        stats.append(item['awayPossession'])
         self.logger.info('Away possession: %s ', item['awayPossession'])
         
         stats_table = response.xpath('//div[@class="box-content ab-content"]/table')
@@ -63,24 +68,31 @@ class SpielstatSpider(scrapy.Spider):
             self.logger.info('Stat: %s ', s.extract())
             stats.append(s.extract())
         
-        item['homeShotsOnGoal'] = stats[0]
-        item['awayShotsOnGoal'] = stats[1]
+        item['homeShotsOnGoal'] = stats[4]
+        item['awayShotsOnGoal'] = stats[5]
         
-        item['homeMissedShots'] = stats[2]
-        item['awayMissedShots'] = stats[3]
+        item['homeMissedShots'] = stats[6]
+        item['awayMissedShots'] = stats[7]
         
-        item['homeCorners'] = stats[4]
-        item['awayCorners'] = stats[5]
+        item['homeCorners'] = stats[8]
+        item['awayCorners'] = stats[9]
         
-        item['homeOffsides'] = stats[6]
-        item['awayOffsides'] = stats[7]
+        item['homeOffsides'] = stats[10]
+        item['awayOffsides'] = stats[11]
         
-        item['homeThrowIn'] = stats[8]
-        item['awayThrowIn'] = stats[9]
+        item['homeThrowIn'] = stats[12]
+        item['awayThrowIn'] = stats[13]
         
-        item['homeInfractions'] = stats[10]
-        item['awayInfractions'] = stats[11]
+        item['homeInfractions'] = stats[14]
+        item['awayInfractions'] = stats[15]
         
-        returnTable = 'Foo | Bar | text \n ' +' ---|---|---- \n ' +'Foo | Bar | text \n ' +'text | text | text \n ' +'text | text | text \n ' +'text | text | text \n ' +'text | text | text \n ' +'text | text | text'
-        self.logger.info('returnTable %s ', returnTable)
+        for s in range(len(stats)):
+            self.logger.info('Array value: %s ', stats[s])
+            if(s == 2):
+                outputTable.append(stats[0] + ' | ' +  item['scoreboard'] + '  | ' + stats[1]  + ' \n ')
+                outputTable.append('---|---|---- \n')
+            elif(s > 2 and s %2 == 0):
+                outputTable.append(stats[s-1] + ' | ' +  labels[s-4] + '  | ' + stats[s]  + ' \n ')
+                 
+        self.logger.info('outputTable %s ', outputTable)
         
