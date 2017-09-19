@@ -1,7 +1,40 @@
 # -*- coding: utf-8 -*-
-
-# Define here the models for your scraped items
+# spielstat items
 #
-# See documentation in:
-# http://doc.scrapy.org/en/latest/topics/items.html
+# @author: nachos
+# github.com/imnachos/spielstat
 
+
+import scrapy
+
+
+class SpielstatItem(scrapy.Item):
+    
+    """
+        Item for storing match stats
+    """
+
+    homeTeam = scrapy.Field()
+    awayTeam = scrapy.Field()
+    homeGoals = scrapy.Field()
+    awayGoals= scrapy.Field()
+    
+    homePossession = scrapy.Field()
+    homeShotsOnGoal = scrapy.Field()
+    homeMissedShots = scrapy.Field()
+    homeFreekicks = scrapy.Field()
+    homeCorners = scrapy.Field()
+    homeOffsides = scrapy.Field()
+    homeThrowIn = scrapy.Field()
+    homeSaves = scrapy.Field()
+    homeInfractions = scrapy.Field()
+    
+    awayPossession = scrapy.Field()
+    awayShotsOnGoal = scrapy.Field()
+    awayMissedShots = scrapy.Field()
+    awayFreekicks = scrapy.Field()
+    awayCorners = scrapy.Field()
+    awayOffsides = scrapy.Field()
+    awayThrowIn = scrapy.Field()
+    awaySaves = scrapy.Field()
+    awayInfractions = scrapy.Field()
