@@ -16,20 +16,40 @@ class SpielstatSpider(scrapy.Spider):
     print('Starting Spielstat.')
     
     name = 'spielstat'
-    
+    allowed_domains = ['www.marcadores.com']
+        
     def start_requests(self):
         print('Start scraping.')
-        urls = ['http://www.marcadores.com/futbol/alemania/bundesliga/monchengladbach-stuttgart-m10541075.html']
+        url = self.settings['TEAM_TO_SCRAPE']
         
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
-        yield scrapy.Request(url=url, callback=self.parse)
+        yield scrapy.Request(url=url, callback=self.getLiveMatch, encoding='utf-8')
 	
-    def parse(self, response):
+    def getLiveMatch(self, response):  
+        self.logger.info('Get live match.')
+        liveUrl = ''
+        matchesTable = response.xpath('//tbody')
+        
+        self.logger.info('Parse called on: %s', response.url)
+        #self.logger.info('Response body: %s', response.body)
+                 
+        for liveRow in matchesTable.xpath('.//td[@class="event-status event-status-elapsed event-status-elapsed-ticking"]'):
+            self.logger.info('liveRow: %s', liveRow)
+            parentTable = liveRow.xpath('./..')
+            self.logger.info('parentTable: %s', parentTable)
+                               
+            for liveMatch in parentTable.xpath('.//*[contains(@class, "event-score-col-runningscore event-score-runningscore")]'):
+                gameLink = liveMatch.xpath('a[@class="lnk"]')
+                liveUrl = 'http://www.marcadores.com' + gameLink.xpath('@href')[0].extract()
+                self.logger.info('liveUrl: %s', liveUrl)
+                return scrapy.Request(url=liveUrl, callback=self.parseLiveMatch, encoding='utf-8')
+    
+    def parseLiveMatch(self, response):
+        self.logger.info('Parse live match.')
         item = SpielstatItem()
         stats = []
+        siteLabels = []
         outputTable = []
-        labels = ['Possesion','Shots on goal', 'Missed shots', 'Corners', 'Offsides', 'Throw-ins', 'Infractions']
+        translations = {'Tiros a puerta' : 'Shots on goal', 'Tiros fuera' : 'Missed shots', 'Saques de falta' : 'Free kicks', 'Cรณrners' : 'Corners', 'Fueras de juego' : 'Offsides', 'Saques de banda' : 'Throw-ins', 'Paradas del portero' : 'Saves', 'Saques de centro' : 'Goal kicks', 'Faltas' : 'Infractions'}
         
         self.logger.info('Parse called on: %s', response.url)
         #self.logger.info('Response body: %s', response.body)
@@ -54,48 +74,48 @@ class SpielstatSpider(scrapy.Spider):
         item['scoreboard'] = item['homeGoals'] + '-' + item['awayGoals']
         
         main_stats = response.xpath('//div[@class="main-stats"]')
-        
-        item['homePossession'] = main_stats.xpath('//div[@class="home"]/span/text()')[0].extract()
-        self.logger.info('Home possession: %s ', item['homePossession'])
-        stats.append(item['homePossession'])
-        
-        item['awayPossession'] = main_stats.xpath('//div[@class="away"]/span/text()')[0].extract()
-        self.logger.info('Away possession: %s ', item['awayPossession'])
-        stats.append(item['awayPossession'])
-        
-        stats_table = response.xpath('//div[@class="box-content ab-content"]/table')
-        
-        for s in stats_table.xpath('.//td[@class="stat-value"]/text()'):  
-            stats.append(s.extract())
-        
-        item['homeShotsOnGoal'] = stats[4]
-        item['awayShotsOnGoal'] = stats[5]
-        
-        item['homeMissedShots'] = stats[6]
-        item['awayMissedShots'] = stats[7]
-        
-        item['homeCorners'] = stats[8]
-        item['awayCorners'] = stats[9]
-        
-        item['homeOffsides'] = stats[10]
-        item['awayOffsides'] = stats[11]
-       
-        item['homeThrowIn'] = stats[12]
-        item['awayThrowIn'] = stats[13]
-        
-        item['homeInfractions'] = stats[14]
-        item['awayInfractions'] = stats[15]
-        
-        outputTable.append(item['homeTeam']  + ' | ' +  item['scoreboard'] + ' | ' + item['awayTeam'] + ' \n')
-        outputTable.append('---|---|---- \n')
-        
-        for s in range(len(stats)):
+        if(len(main_stats) > 0):
+            
+            item['homePossession'] = main_stats.xpath('//div[@class="home"]/span/text()')[0].extract()
+            self.logger.info('Home possession: %s ', item['homePossession'])
+            stats.append(item['homePossession'])
+            
+            item['awayPossession'] = main_stats.xpath('//div[@class="away"]/span/text()')[0].extract()
+            self.logger.info('Away possession: %s ', item['awayPossession'])
+            stats.append(item['awayPossession'])
+            
+            stats_table = response.xpath('//div[@class="box-content ab-content"]/table')
+            
+            
+            stats = stats_table.xpath('.//td[@class="stat-value"]/text()').extract()
+            siteLabels = stats_table.xpath('.//td[@class="stat-name"]/text()').extract()
+            print(stats)
+            print(siteLabels)
 
-            if(s>1 and s%2 == 0):
-                outputTable.append(stats[s] + ' | ' +  labels[int((s/2)-1)] + ' | ' + stats[s+1]  + ' \n')
-                 
-        self.logger.info('outputTable %s ', outputTable)
-        item['statTable'] = outputTable
+            outputTable.append(item['homeTeam']  + ' | ' +  item['scoreboard'] + ' | ' + item['awayTeam'])
+            outputTable.append('---|---|----')
+            outputTable.append(item['homePossession'] + ' | Possesion | ' + item['awayPossession'])
+            
+            for s in range(len(stats)):
+                if(s%2 != 0 and (s<len(stats))):
+
+                    labelToTranslate = siteLabels[int((s-1)/2)]
+                    printLabel = ''
+                    if(labelToTranslate not in translations):
+                        printLabel = labelToTranslate
+                    else:
+                        printLabel = translations[labelToTranslate]
+
+
+                    outputTable.append(stats[s-1] + ' | ' + printLabel  + ' | ' + stats[s])
+                     
+            self.logger.info('outputTable %s ', outputTable)
+            
+            
+            item['statTable'] = ' \n'.join(outputTable)
         
-        yield item
+            return item
+        else:
+            item['errors'] = 'No stats available for this game'
+            return item
         

@@ -14,6 +14,8 @@ class SpielstatItem(scrapy.Item):
         Item for storing match stats
     """
     
+    errors = scrapy.Field()
+    
     statTable = scrapy.Field()
     
     homeTeam = scrapy.Field()

@@ -16,7 +16,6 @@ class SpielstatPipeline(object):
         print('Initialize pipeline.')
 
     def open_spider(self, spider):
-        teamURL = spider.settings['TEAM_TO_SCRAPE']
         print('Open spider.')
 
     def close_spider(self, spider):
@@ -24,8 +23,20 @@ class SpielstatPipeline(object):
 
     def process_item(self, item, spider):
         print('Post item:', item)
-        reddit = praw.Reddit('spielstat')
+        reddit = praw.Reddit('spielstat') 
+                     
+        print(reddit.user.me())
         subreddit = reddit.subreddit(spider.settings['SUBREDDIT'])
-
+        edited = False
         
+        for submission in subreddit.hot(limit=3):
+            if('Game Thread' in (submission.title)):
+                comments = submission.comments.list()
+                for comment in comments:
+                    if(comment.author == 'Spielstat_bot'):
+                        comment.edit('**Stats** \n' + item['statTable'])
+                        edited = True
+        
+                if(edited == False):
+                    submission.reply('**Stats** \n' + item['statTable'])
         return item
