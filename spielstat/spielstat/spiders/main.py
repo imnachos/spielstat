@@ -6,7 +6,6 @@
 
 import logging
 import scrapy
-import praw
 from scrapy.spiders import CrawlSpider
 from scrapy.utils.project import get_project_settings
 from spielstat.items import SpielstatItem
@@ -14,15 +13,17 @@ import json
 
 class SpielstatSpider(scrapy.Spider):
 
+    print('Starting Spielstat.')
+    
     name = 'spielstat'
-    reddit = praw.Reddit('spielstat')
-    subreddit = reddit.subreddit("borussiadortmund")
     
     def start_requests(self):
+        print('Start scraping.')
         urls = ['http://www.marcadores.com/futbol/alemania/bundesliga/monchengladbach-stuttgart-m10541075.html']
         
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
+        yield scrapy.Request(url=url, callback=self.parse)
 	
     def parse(self, response):
         item = SpielstatItem()
@@ -55,17 +56,16 @@ class SpielstatSpider(scrapy.Spider):
         main_stats = response.xpath('//div[@class="main-stats"]')
         
         item['homePossession'] = main_stats.xpath('//div[@class="home"]/span/text()')[0].extract()
-        stats.append(item['homePossession'])
         self.logger.info('Home possession: %s ', item['homePossession'])
+        stats.append(item['homePossession'])
         
         item['awayPossession'] = main_stats.xpath('//div[@class="away"]/span/text()')[0].extract()
-        stats.append(item['awayPossession'])
         self.logger.info('Away possession: %s ', item['awayPossession'])
+        stats.append(item['awayPossession'])
         
         stats_table = response.xpath('//div[@class="box-content ab-content"]/table')
         
         for s in stats_table.xpath('.//td[@class="stat-value"]/text()'):  
-            self.logger.info('Stat: %s ', s.extract())
             stats.append(s.extract())
         
         item['homeShotsOnGoal'] = stats[4]
@@ -79,20 +79,23 @@ class SpielstatSpider(scrapy.Spider):
         
         item['homeOffsides'] = stats[10]
         item['awayOffsides'] = stats[11]
-        
+       
         item['homeThrowIn'] = stats[12]
         item['awayThrowIn'] = stats[13]
         
         item['homeInfractions'] = stats[14]
         item['awayInfractions'] = stats[15]
         
+        outputTable.append(item['homeTeam']  + ' | ' +  item['scoreboard'] + ' | ' + item['awayTeam'] + ' \n')
+        outputTable.append('---|---|---- \n')
+        
         for s in range(len(stats)):
-            self.logger.info('Array value: %s ', stats[s])
-            if(s == 2):
-                outputTable.append(stats[0] + ' | ' +  item['scoreboard'] + '  | ' + stats[1]  + ' \n ')
-                outputTable.append('---|---|---- \n')
-            elif(s > 2 and s %2 == 0):
-                outputTable.append(stats[s-1] + ' | ' +  labels[s-4] + '  | ' + stats[s]  + ' \n ')
+
+            if(s>1 and s%2 == 0):
+                outputTable.append(stats[s] + ' | ' +  labels[int((s/2)-1)] + ' | ' + stats[s+1]  + ' \n')
                  
         self.logger.info('outputTable %s ', outputTable)
+        item['statTable'] = outputTable
+        
+        yield item
         

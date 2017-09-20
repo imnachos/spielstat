@@ -13,7 +13,9 @@ class SpielstatItem(scrapy.Item):
     """
         Item for storing match stats
     """
-
+    
+    statTable = scrapy.Field()
+    
     homeTeam = scrapy.Field()
     awayTeam = scrapy.Field()
     homeGoals = scrapy.Field()
