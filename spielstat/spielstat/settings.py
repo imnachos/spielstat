@@ -15,19 +15,17 @@ ITEM_PIPELINES = {
     'spielstat.pipelines.SpielstatPipeline': 100
 }
 
-#TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/alemania/equipo-borussia-dortmund-8006912.html'
-TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/espana/equipo-real-madrid-8005756.html'
+TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/alemania/equipo-borussia-dortmund-8006912.html'
 
 FEED_EXPORT_ENCODING = 'utf-8'
 
-ALLOWED_DOMAINS = ['www.marcadores.com']
+ALLOWED_DOMAINS = ['http://www.marcadores.com']
 
 ROBOTSTXT_OBEY = True
 COOKIES_ENABLED = False
-DOWNLOAD_DELAY = 10
+DOWNLOAD_DELAY = 120
 
 LOG_ENABLED = False
 LOG_FILE = 'log.log'
-LOG_STDOUT = True
 
 SUBREDDIT = 'spielstat_bot'
