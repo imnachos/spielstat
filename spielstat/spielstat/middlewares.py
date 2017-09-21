@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-
-# Define here the models for your spider middleware
+# -*- coding: utf-8 -*-
+# spielstat items
 #
-# See documentation in:
-# http://doc.scrapy.org/en/latest/topics/spider-middleware.html
+# @author: nachos
+# github.com/imnachos/spielstat
 
 from scrapy import signals
 
@@ -18,7 +18,7 @@ class SpielstatSpiderMiddleware(object):
         # This method is used by Scrapy to create your spiders.
         s = cls()
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
-        return s
+        return s      
 
     def process_spider_input(self, response, spider):
         # Called for each response that goes through the spider
