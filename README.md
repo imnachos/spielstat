@@ -29,9 +29,7 @@ If **TRUE**, you **need** to set BOT_SUBREDDIT, otherwise the bot won't work.
 
 # Configuration (settings.py)
 
-DUMP_TO_BOT_SUBREDDIT = Post the matches to the Subreddit defined in BOT_SUBREDDIT.
-
-BOT_SUBREDDIT = Subreddit to post the updates to.
+BOT_SUBREDDIT = Subreddit to post the updates to if SCRAPE_LEAGUES is FALSE.
 
 HOT_LIMIT = How far should the bot go the find if a math thread already exists. (Typically, 30 is enough)
 
