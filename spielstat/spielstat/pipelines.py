@@ -97,8 +97,8 @@ class SpielstatPipeline(object):
             completeComment = commentBody + commentFooter
             
             submission = self.checkBotSubredditForMatch(item['homeTeam'], item['awayTeam'], reddit, spider)
-            submission.edit(completeComment)
             
-        
-                    
+            if('Fin' not in submission.selftext):
+                submission.edit(completeComment)
+                      
         return item

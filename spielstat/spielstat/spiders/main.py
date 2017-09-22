@@ -20,7 +20,7 @@ class SpielstatSpider(CrawlSpider):
         print('Start scraping.')
         url = self.settings['TEAM_TO_SCRAPE']
         
-        if(self.settings['SCRAPE_LEAGUES']):
+        if(self.settings['SCRAPE_LEAGUES'] and len(self.settings['LEAGUES_TO_SCRAPE']) != 0):
             self.logger.info('Scrape leagues.')
             
             for league in self.settings['LEAGUES_TO_SCRAPE']:

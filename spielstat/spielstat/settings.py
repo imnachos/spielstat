@@ -24,9 +24,9 @@ HOT_LIMIT = 30
 
 ## Team
 
-#TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/alemania/equipo-borussia-dortmund-8006912.html'
 TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/e-a-u/equipo-dibba-al-fujairah-8388787.html'
 TEAM_SUBREDDIT = 'spielstat_bot'
+TEAM_LIVE_THREAD = True
 
 ## Leagues
 
