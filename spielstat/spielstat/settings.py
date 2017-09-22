@@ -15,17 +15,38 @@ ITEM_PIPELINES = {
     'spielstat.pipelines.SpielstatPipeline': 100
 }
 
-TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/alemania/equipo-borussia-dortmund-8006912.html'
+
+## Subreddit
+
+DUMP_TO_BOT_SUBREDDIT = True
+BOT_SUBREDDIT = 'spielstat_bot'
+HOT_LIMIT = 30
+
+## Team
+
+#TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/alemania/equipo-borussia-dortmund-8006912.html'
+TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/e-a-u/equipo-dibba-al-fujairah-8388787.html'
+TEAM_SUBREDDIT = 'spielstat_bot'
+
+## Leagues
+
+SCRAPE_LEAGUES = True
+LEAGUES_TO_SCRAPE = ['http://www.marcadores.com/futbol/francia/liga-francesa/',
+            'http://www.marcadores.com/futbol/espana/liga-bbva/',
+            'http://www.marcadores.com/futbol/alemania/bundesliga/',
+            'http://www.marcadores.com/futbol/inglaterra/premier-league/',
+            'http://www.marcadores.com/futbol/internacional/champions-league/',
+            'http://www.marcadores.com/futbol/internacional/europa-league/',
+            'http://www.marcadores.com/futbol/alemania/2-bundesliga/']
+
+ROBOTSTXT_OBEY = True
+COOKIES_ENABLED = False
+DOWNLOAD_DELAY = 60
 
 FEED_EXPORT_ENCODING = 'utf-8'
 
 ALLOWED_DOMAINS = ['http://www.marcadores.com']
 
-ROBOTSTXT_OBEY = True
-COOKIES_ENABLED = False
-DOWNLOAD_DELAY = 120
-
 LOG_ENABLED = False
 LOG_FILE = 'log.log'
 
-SUBREDDIT = 'spielstat_bot'

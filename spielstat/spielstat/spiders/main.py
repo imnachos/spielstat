@@ -15,20 +15,25 @@ class SpielstatSpider(CrawlSpider):
     print('Starting Spielstat.')
     
     name = 'spielstat'
-    allowed_domains = ['www.marcadores.com']
-        
+   
     def start_requests(self):
         print('Start scraping.')
         url = self.settings['TEAM_TO_SCRAPE']
         
-        yield scrapy.Request(url=url, callback=self.getLiveMatch, encoding='utf-8')
-	
-    
+        if(self.settings['SCRAPE_LEAGUES']):
+            self.logger.info('Scrape leagues.')
+            
+            for league in self.settings['LEAGUES_TO_SCRAPE']:
+                yield scrapy.Request(url=league, callback=self.getLiveMatches, encoding='utf-8')
+        
+        else:
+            return scrapy.Request(url=url, callback=self.getLiveMatches, encoding='utf-8')
+	   
     """
-        Looks for a Live game inside a team's page
+        Looks for a live game in a page
     """ 
-    def getLiveMatch(self, response):  
-        self.logger.info('Get live match called on: %s', response.url)
+    def getLiveMatches(self, response):  
+        self.logger.info('Get live matches on: %s', response.url)
         #self.logger.info('Response body: %s', response.body)
         
         liveUrl = ''
@@ -44,7 +49,7 @@ class SpielstatSpider(CrawlSpider):
                 gameLink = liveMatch.xpath('a[@class="lnk"]')
                 liveUrl = 'http://www.marcadores.com' + gameLink.xpath('@href')[0].extract()
                 self.logger.info('liveUrl: %s', liveUrl)
-                return scrapy.Request(url=liveUrl, callback=self.parseLiveMatch, encoding='utf-8')
+                yield scrapy.Request(url=liveUrl, callback=self.parseLiveMatch, encoding='utf-8')
         
     
     """
@@ -123,5 +128,5 @@ class SpielstatSpider(CrawlSpider):
         else:
             item['errors'] = 'No stats available for this game.'
             yield item
-            yield scrapy.Request(url=response.url, callback=self.parseLiveMatch, dont_filter=True)
+            #yield scrapy.Request(url=response.url, callback=self.parseLiveMatch, dont_filter=True)
         
