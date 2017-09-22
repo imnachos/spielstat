@@ -52,7 +52,7 @@ class SpielstatPipeline(object):
         return commentBody
     
     def process_item(self, item, spider):
-        print('Post item:', item)
+        print('Post item:', item['scoreboard'])
         
         reddit = praw.Reddit('spielstat')  
             
@@ -60,11 +60,11 @@ class SpielstatPipeline(object):
         commentFooter = '\n\n *I am a bot! Please [PM me](https://www.reddit.com/message/compose/?to=Spielstat_bot) if I\'ve been naughty :)*'
 
         
-        if(spider.settings['DUMP_TO_BOT_SUBREDDIT'] == False):
+        if(spider.settings['SCRAPE_LEAGUES'] == False):
         
-            subreddit = reddit.subreddit(spider.settings['TEAM_SUBREDDIT'])    
+            subreddit = reddit.subreddit(spider.settings['TEAM_SUBREDDIT']) 
             if('Fin' in item['updateTime']):
-                commentBody = getCommentBody(True, item)
+                commentBody = self.getCommentBody(True, item)
                 completeComment = commentBody + commentFooter
             
                 for submission in subreddit.hot(limit=3):
@@ -74,23 +74,31 @@ class SpielstatPipeline(object):
                         postAuthor.message('Spielstat match stats.', completeComment, from_subreddit=None)
                         self.logger.info('Match finished. Sent PM to Post Game Thread author.')
                         spider.close()
-            else:         
-                commentBody = getCommentBody(False, item)
+            else:
+                liveThread = ''
+                commentBody = self.getCommentBody(False, item)
                 completeComment = commentBody + commentFooter
                 
                 for submission in subreddit.hot(limit=3):
                     if('Game Thread' in (submission.title) and 'Post' not in submission.title):
                         comments = submission.comments.list()
+                        liveThread = submission.url
+                        
                         for comment in comments:
                             if(comment.author == 'Spielstat_bot'):
                                 doesCommentExist = True
                                 
                         if(doesCommentExist == False):
-                            self.logger.info('Comment posted.')
                             submission.reply(completeComment)
                         else:
-                            self.logger.info('Comment edited.')
                             comment.edit(completeComment)
+                
+                #Post to live thread
+                if(spider.settings['TEAM_LIVE_THREAD']):
+                    liveID = liveThread[28:]
+                    liveThread = reddit.live(liveID)
+                    #liveThread.contrib.add(completeComment)
+                           
         else:
             subreddit = reddit.subreddit(spider.settings['BOT_SUBREDDIT'])
             commentBody = self.getCommentBody(False, item)

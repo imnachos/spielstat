@@ -18,19 +18,20 @@ ITEM_PIPELINES = {
 
 ## Subreddit
 
-DUMP_TO_BOT_SUBREDDIT = True
+
 BOT_SUBREDDIT = 'spielstat_bot'
 HOT_LIMIT = 30
 
 ## Team
 
-TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/e-a-u/equipo-dibba-al-fujairah-8388787.html'
+TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/espana/equipo-sevilla-atletico-8088554.html'
 TEAM_SUBREDDIT = 'spielstat_bot'
 TEAM_LIVE_THREAD = True
 
 ## Leagues
 
-SCRAPE_LEAGUES = True
+SCRAPE_LEAGUES = False
+
 LEAGUES_TO_SCRAPE = ['http://www.marcadores.com/futbol/francia/liga-francesa/',
             'http://www.marcadores.com/futbol/espana/liga-bbva/',
             'http://www.marcadores.com/futbol/alemania/bundesliga/',
@@ -41,7 +42,7 @@ LEAGUES_TO_SCRAPE = ['http://www.marcadores.com/futbol/francia/liga-francesa/',
 
 ROBOTSTXT_OBEY = True
 COOKIES_ENABLED = False
-DOWNLOAD_DELAY = 60
+DOWNLOAD_DELAY = 1
 
 FEED_EXPORT_ENCODING = 'utf-8'
 

@@ -19,7 +19,7 @@ class SpielstatSpider(CrawlSpider):
     def start_requests(self):
         print('Start scraping.')
         url = self.settings['TEAM_TO_SCRAPE']
-        
+
         if(self.settings['SCRAPE_LEAGUES'] and len(self.settings['LEAGUES_TO_SCRAPE']) != 0):
             self.logger.info('Scrape leagues.')
             
@@ -27,12 +27,13 @@ class SpielstatSpider(CrawlSpider):
                 yield scrapy.Request(url=league, callback=self.getLiveMatches, encoding='utf-8')
         
         else:
-            return scrapy.Request(url=url, callback=self.getLiveMatches, encoding='utf-8')
+            yield scrapy.Request(url=url, callback=self.getLiveMatches, encoding='utf-8')
 	   
     """
         Looks for a live game in a page
     """ 
     def getLiveMatches(self, response):  
+        print('Get live matches on: ' + response.url)
         self.logger.info('Get live matches on: %s', response.url)
         #self.logger.info('Response body: %s', response.body)
         
