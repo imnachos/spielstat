@@ -26,11 +26,11 @@ HOT_LIMIT = 30
 
 TEAM_TO_SCRAPE = 'http://www.marcadores.com/futbol/espana/equipo-sevilla-atletico-8088554.html'
 TEAM_SUBREDDIT = 'spielstat_bot'
-TEAM_LIVE_THREAD = True
+TEAM_LIVE_THREAD = False
 
 ## Leagues
 
-SCRAPE_LEAGUES = False
+SCRAPE_LEAGUES = True
 
 LEAGUES_TO_SCRAPE = ['http://www.marcadores.com/futbol/francia/liga-francesa/',
             'http://www.marcadores.com/futbol/espana/liga-bbva/',
