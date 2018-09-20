@@ -1,5 +1,5 @@
 # spielstat
-A simple python live football feed with reddit integration.
+A sample project on how to use scrapy and integrate it with reddit.
 
 # Installation
 
